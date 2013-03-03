@@ -88,7 +88,7 @@ class Gox
      * @return array $info
      */
     function getInfo() {
-        $info = $this->mtgox_query('0/info.php');
+        $info = $this->mtgox_query('1/generic/private/info');
         $this->info = $info; // Hold it in a variable for easy access
         return $info;
     }
@@ -98,10 +98,18 @@ class Gox
      * Returns current ticker from MtGOX
      * @return $ticker
      */
-    function ticker() {
-        $ticker = $this->mtgox_query('0/ticker.php');
-        $this->ticker = $ticker; // Another variable to contain it.
-        return $ticker;
+    function ticker($currency) 
+    {
+    		if (isset($currency)
+    		{
+    			if($currency == USD) $ticker = $this->mtgox_query('1/BTCUSD/ticker');
+    			if($currency == EUR) $ticker = $this->mtgox_query('1/BTCEUR/ticker');
+    		} else {
+    			$ticker = $this->mtgox_query('1/BTCUSD/ticker');
+    		}
+        
+        	$this->ticker = $ticker; // Another variable to contain it.
+        	return $ticker;
     }
 	/**
 	 * Gox::redeemCode()
@@ -158,7 +166,7 @@ class Gox
          * Warning, I have not yet experimented with direct bitcoin address withdrawals, USE AT YOUR OWN RISK!
          */
         if($method = "BTC" && isset($btca)) {
-            $withdraw = $this->mtgox_query('0/withdraw.php', array('group1' => 'BTC', 'amount' => $amount, 'btca' => $btca));
+            $withdraw = $this->mtgox_query('1/generic/bitcoin/send_simple', array('address' => $btca, 'amount_int' => $amount, 'fee_int' => 0, 'no_instant' => true, 'green' => true));
             $this->withdrew = $withdraw; // More legacy reporting... may remove in the future if needed.
             return $withdraw;
         }
